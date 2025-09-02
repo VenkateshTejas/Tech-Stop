@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: Admin API
+  summary: API for managing products and orders by administrators
+  version: '1.0'
+servers:
+  - url: http://localhost:8000
+    description: Local development admin API
+
+paths:
+  /admin/login:
+    post:
+      operationId: admin-login
+      description: API for administrator login
+      responses:
+        200:
+          description: Successfully logged in
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        401:
+          description: Authentication Error
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /admin/products:
+    post:
+      operationId: add-product
+      description: Adds a new product to the catalog
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        201:
+          description: Product added successfully
+        400:
+          description: Invalid product data
+
+  /admin/products/{productId}:
+    put:
+      operationId: update-product
+      description: Updates an existing product in the catalog
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        200:
+          description: Product updated successfully
+        404:
+          description: Product not found
+
+    delete:
+      operationId: delete-product
+      description: Deletes a product from the catalog
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Product deleted successfully
+        404:
+          description: Product not found
+
+  /admin/orders:
+    get:
+      operationId: list-orders
+      description: Retrieves all customer orders for admin view
+      responses:
+        200:
+          description: Successfully retrieved orders
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        stock:
+          type: integer
+        categoryId:
+          type: string
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+        customerId:
+          type: string
+        orderDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+          format: float
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string

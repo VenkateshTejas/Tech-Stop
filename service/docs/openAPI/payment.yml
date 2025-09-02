@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: Payment API
+  summary: API for managing payments and invoices
+  version: '1.0'
+servers:
+  - url: http://localhost:8000
+    description: Local development payment API
+
+paths:
+  /payment/process:
+    post:
+      operationId: process-payment
+      description: Processes a payment for a customer order
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                paymentMethodId:
+                  type: string
+                amount:
+                  type: number
+                  format: float
+      responses:
+        201:
+          description: Payment processed successfully
+
+  /payment/invoice/{paymentId}:
+    get:
+      operationId: get-invoice
+      description: Generates an invoice for a completed payment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved invoice
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Invoice"
+
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        invoiceId:
+          type: string
+        paymentId:
+          type: string
+        invoiceDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+          format: float
+        tax:
+          type: number
+          format: float
+        itemList:
+          type: array
+          items:
+            type: string

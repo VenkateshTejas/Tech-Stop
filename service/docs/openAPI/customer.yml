@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: Customer API
+  summary: API for customer profile, cart, and order management
+  version: '1.0'
+servers:
+  - url: http://localhost:8000
+    description: Local development customer API
+
+paths:
+  /customer/register:
+    post:
+      operationId: customer-register
+      description: Registers a new customer
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        201:
+          description: Customer registered successfully
+
+  /customer/login:
+    post:
+      operationId: customer-login
+      description: Logs in a customer
+      responses:
+        200:
+          description: Login successful
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /customer/cart:
+    get:
+      operationId: get-cart
+      description: Retrieves the customer’s cart
+      responses:
+        200:
+          description: Successfully retrieved cart
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /customer/order:
+    post:
+      operationId: place-order
+      description: Places an order for the customer
+      responses:
+        201:
+          description: Order placed successfully
+
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    Cart:
+      type: object
+      properties:
+        cartId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        totalAmount:
+          type: number
+          format: float
+    CartItem:
+      type: object
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: float
